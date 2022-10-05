@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "build": "npx tsc",
-    "start": "npx tsc && node dist/index.js",
+    "build": "npx etsc",
+    "start": "npx etsc && node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "swagger": "node swaggerGen.ts"
   },
