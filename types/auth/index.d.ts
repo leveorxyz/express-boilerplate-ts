@@ -22,3 +22,9 @@ export interface JwtOptions {
   refreshExpire?: number;
   secret?: string;
 }
+
+export type JWTPayload = {
+  id: string;
+  iat: number | undefined;
+  exp: number | undefined;
+};

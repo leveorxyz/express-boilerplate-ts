@@ -1,7 +1,7 @@
-type GlobalResponse = {
+type GlobalResponse<T> = {
   message: string;
   statusCode: Number;
-  result: Object | null | string;
+  result: T;
 };
 
 type Demo = {
