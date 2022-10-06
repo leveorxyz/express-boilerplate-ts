@@ -9,7 +9,6 @@ import {
   validateJwt,
   validateUser,
 } from "../../services/user.service";
-import { request } from "http";
 
 export const createRefreshToken = async (
   req: Request,
