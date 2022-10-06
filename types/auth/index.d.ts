@@ -27,4 +27,5 @@ export type JWTPayload = {
   id: string;
   iat: number | undefined;
   exp: number | undefined;
+  type?: stgring;
 };

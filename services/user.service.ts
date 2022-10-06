@@ -57,3 +57,11 @@ export const validateUser = async (email: string, password: string) => {
     payload: user,
   };
 };
+
+export const createJwtToken = (
+  payload: { [key: string]: any },
+  secret: string,
+  expire: number | string
+) => {
+  return jwt.sign(payload, secret, { expiresIn: expire });
+};

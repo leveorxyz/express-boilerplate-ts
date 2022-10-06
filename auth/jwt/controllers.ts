@@ -4,19 +4,20 @@ import userConfig from "../../configs/auth.config";
 import { Request, Response } from "express";
 import { JwtOptions } from "../../types/auth";
 import { wrappedResponse } from "../../utils/functions";
-import { validateJwt, validateUser } from "../../services/user.service";
+import {
+  createJwtToken,
+  validateJwt,
+  validateUser,
+} from "../../services/user.service";
 import { request } from "http";
 
 export const createRefreshToken = async (
   req: Request,
   res: Response<GlobalResponse<string | null>>
 ) => {
-  const secret = (userConfig.JWT as JwtOptions).secret
-    ? (userConfig.JWT as JwtOptions).secret!
-    : defaultConfig.secret;
-  const refreshExpire = (userConfig.JWT as JwtOptions).refreshExpire
-    ? (userConfig.JWT as JwtOptions).refreshExpire
-    : defaultConfig.refreshExpire;
+  const secret = (userConfig.JWT as JwtOptions).secret ?? defaultConfig.secret;
+  const refreshExpire =
+    (userConfig.JWT as JwtOptions).refreshExpire ?? defaultConfig.refreshExpire;
 
   if (!req.body.accessToken) {
     return wrappedResponse(res, "No access token in body", 400, null);
@@ -29,14 +30,17 @@ export const createRefreshToken = async (
     return wrappedResponse(res, jwtResult.message, 400, null);
   }
 
-  // TODO: add token creation
+  if (!jwtResult.payload.type || jwtResult.payload.type !== "access") {
+    return wrappedResponse(res, "Invalid Token", 400, null);
+  }
 
-  return wrappedResponse(
-    res,
-    "Token created successfully",
-    200,
-    jwtResult.payload
+  const token = createJwtToken(
+    { id: jwtResult.payload.id, type: "refresh" },
+    secret,
+    refreshExpire
   );
+
+  return wrappedResponse(res, "Token created successfully", 200, token);
 };
 
 export const login = async (
@@ -45,6 +49,12 @@ export const login = async (
     GlobalResponse<{ accessToken: string; refreshToken: string } | null>
   >
 ) => {
+  const secret = (userConfig.JWT as JwtOptions).secret ?? defaultConfig.secret;
+  const refreshExpire =
+    (userConfig.JWT as JwtOptions).refreshExpire ?? defaultConfig.refreshExpire;
+  const accessExpire =
+    (userConfig.JWT as JwtOptions).refreshExpire ?? defaultConfig.accessExpire;
+
   const validationResult = await validateUser(
     req.body.email,
     req.body.password
@@ -54,10 +64,19 @@ export const login = async (
     return wrappedResponse(res, validationResult.message, 400, null);
   }
 
-  // TODO: token creation
+  const accessToken = createJwtToken(
+    { id: validationResult.payload.id, type: "access" },
+    secret,
+    accessExpire
+  );
+  const refreshToken = createJwtToken(
+    { id: validationResult.payload.id, type: "refresh" },
+    secret,
+    refreshExpire
+  );
 
   return wrappedResponse(res, "Login successful", 200, {
-    accessToken: "",
-    refreshToken: "",
+    accessToken,
+    refreshToken,
   });
 };
