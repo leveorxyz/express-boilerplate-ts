@@ -1,6 +1,8 @@
-import { JWTPayload } from "../types/auth";
 import jwt from "jsonwebtoken";
-import { findUserById } from "../datastores/user.datastore";
+import bcrypt from "bcrypt";
+
+import { JWTPayload } from "../types/auth";
+import { findUserByEmail, findUserById } from "../datastores/user.datastore";
 
 export const validateJwt = async (token: string, secret: string) => {
   try {
@@ -30,4 +32,28 @@ export const validateJwt = async (token: string, secret: string) => {
       payload: null,
     };
   }
+};
+
+export const validateUser = async (email: string, password: string) => {
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    return {
+      message: "Invalid credentials",
+      payload: null,
+    };
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return {
+      message: "Invalid credentials",
+      payload: null,
+    };
+  }
+
+  return {
+    payload: user,
+  };
 };
