@@ -4,7 +4,8 @@ import userConfig from "../../configs/auth.config";
 import { Request, Response } from "express";
 import { JwtOptions } from "../../types/auth";
 import { wrappedResponse } from "../../utils/functions";
-import { validateJwt } from "../../services/user.service";
+import { validateJwt, validateUser } from "../../services/user.service";
+import { request } from "http";
 
 export const createRefreshToken = async (
   req: Request,
@@ -28,10 +29,35 @@ export const createRefreshToken = async (
     return wrappedResponse(res, jwtResult.message, 400, null);
   }
 
+  // TODO: add token creation
+
   return wrappedResponse(
     res,
     "Token created successfully",
     200,
     jwtResult.payload
   );
+};
+
+export const login = async (
+  req: Request,
+  res: Response<
+    GlobalResponse<{ accessToken: string; refreshToken: string } | null>
+  >
+) => {
+  const validationResult = await validateUser(
+    req.body.email,
+    req.body.password
+  );
+
+  if (!validationResult.payload) {
+    return wrappedResponse(res, validationResult.message, 400, null);
+  }
+
+  // TODO: token creation
+
+  return wrappedResponse(res, "Login successful", 200, {
+    accessToken: "",
+    refreshToken: "",
+  });
 };
