@@ -1,8 +1,14 @@
-import { AuthSchemes } from "../types/auth";
 import { httpConfigs, httpRouters } from "./http";
 import { jwtConfigs, jwtRouters } from "./jwt";
 
-export const authFactory = (scheme: AuthSchemes) => {
+export const AuthSchemes = {
+  JWT: "jwt",
+  HTTP: "http",
+};
+
+export const authFactory = (
+  scheme: typeof AuthSchemes[keyof typeof AuthSchemes]
+) => {
   return scheme === AuthSchemes.JWT
     ? { middleware: () => {}, router: jwtRouters }
     : { middleware: () => {}, router: httpRouters };

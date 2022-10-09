@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-import { JWTPayload } from "../types/auth";
 import {
   createUser,
   findUserByEmail,

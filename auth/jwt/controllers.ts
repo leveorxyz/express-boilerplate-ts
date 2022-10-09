@@ -3,7 +3,6 @@ import { User } from "@prisma/client";
 
 import defaultConfig from "./defaults";
 import userConfig from "../../configs/auth.config";
-import { JwtOptions } from "../../types/auth";
 import { wrappedResponse } from "../../utils/functions";
 import {
   createJwtToken,
