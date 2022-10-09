@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Connect to PostgreSQL
+      - name: Spawn PostgreSQL and run tests
         # Runs a script that creates a PostgreSQL table, populates
         # the table with data, and then retrieves the data.
         run: yarn test
