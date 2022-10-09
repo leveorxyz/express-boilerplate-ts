@@ -13,7 +13,7 @@ import {
 
 export const createRefreshToken = async (
   req: Request,
-  res: Response<GlobalResponse<string | null>>
+  res: Response<GlobalResponse<{ refreshToken: string } | null>>
 ) => {
   const secret = (userConfig.JWT as JwtOptions).secret ?? defaultConfig.secret;
   const refreshExpire =
@@ -40,7 +40,9 @@ export const createRefreshToken = async (
     refreshExpire
   );
 
-  return wrappedResponse(res, "Token created successfully", 200, token);
+  return wrappedResponse(res, "Token created successfully", 200, {
+    refreshToken: token,
+  });
 };
 
 export const login = async (

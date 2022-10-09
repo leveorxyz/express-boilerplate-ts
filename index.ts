@@ -20,8 +20,8 @@ app.use(
   })
 );
 
-app.use("/hello", demoRoute);
 app.use("/auth", authProduct.router);
+app.use("/hello", authProduct.middleware, demoRoute);
 
 app.use("*", (_: Request, res: Response) => {
   return wrappedResponse(res, "Not Found", 404, null);

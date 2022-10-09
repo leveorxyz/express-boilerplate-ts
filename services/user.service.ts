@@ -31,6 +31,13 @@ export const validateJwt = async (token: string, secret: string) => {
       };
     }
 
+    if (e instanceof jwt.JsonWebTokenError && e.message == "jwt expired") {
+      return {
+        message: "Token Expired",
+        payload: null,
+      };
+    }
+
     return {
       message: e.message,
       payload: null,
