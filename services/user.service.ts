@@ -2,7 +2,12 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 import { JWTPayload } from "../types/auth";
-import { findUserByEmail, findUserById } from "../datastores/user.datastore";
+import {
+  createUser,
+  findUserByEmail,
+  findUserById,
+} from "../datastores/user.datastore";
+import { User } from "@prisma/client";
 
 export const validateJwt = async (token: string, secret: string) => {
   try {
@@ -64,4 +69,26 @@ export const createJwtToken = (
   expire: number | string
 ) => {
   return jwt.sign(payload, secret, { expiresIn: expire });
+};
+
+export const makeUser = async (user: Omit<User, "id">) => {
+  const prevUser = await findUserByEmail(user.email);
+
+  if (prevUser) {
+    return {
+      payload: null,
+      message: "User already exists with this email",
+    };
+  }
+
+  const hash = await bcrypt.hash(user.password, 12);
+
+  const userPayload = { ...user };
+  userPayload.password = hash;
+
+  const newUser = await createUser(userPayload);
+
+  return {
+    payload: newUser,
+  };
 };

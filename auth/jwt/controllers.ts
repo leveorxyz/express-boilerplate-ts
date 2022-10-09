@@ -1,11 +1,13 @@
+import { Request, Response } from "express";
+import { User } from "@prisma/client";
+
 import defaultConfig from "./defaults";
 import userConfig from "../../configs/auth.config";
-
-import { Request, Response } from "express";
 import { JwtOptions } from "../../types/auth";
 import { wrappedResponse } from "../../utils/functions";
 import {
   createJwtToken,
+  makeUser,
   validateJwt,
   validateUser,
 } from "../../services/user.service";
@@ -78,4 +80,17 @@ export const login = async (
     accessToken,
     refreshToken,
   });
+};
+
+export const register = async (
+  req: Request<Omit<User, "id">>,
+  res: Response<GlobalResponse<null>>
+) => {
+  const userResult = await makeUser(req.body);
+
+  if (!userResult.payload) {
+    return wrappedResponse(res, userResult.message, 400, null);
+  }
+
+  return wrappedResponse(res, "User created successfully", 201, null);
 };
