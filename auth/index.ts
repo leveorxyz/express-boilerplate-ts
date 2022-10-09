@@ -1,4 +1,4 @@
-import { httpConfigs, httpRouters } from "./http";
+import { httpRouters, httpMiddleware } from "./http";
 import { jwtConfigs, jwtRouters } from "./jwt";
 
 export const AuthSchemes = {
@@ -11,5 +11,5 @@ export const authFactory = (
 ) => {
   return scheme === AuthSchemes.JWT
     ? { middleware: () => {}, router: jwtRouters }
-    : { middleware: () => {}, router: httpRouters };
+    : { middleware: httpMiddleware, router: httpRouters };
 };
