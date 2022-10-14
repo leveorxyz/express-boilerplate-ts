@@ -10,8 +10,8 @@ export const wrappedResponse = (
   res: Response,
   message: string,
   statusCode: number,
-  result: Object | null | string
-): Response<GlobalResponse> => {
+  result: unknown
+) => {
   return res.status(statusCode).json({
     message,
     statusCode,

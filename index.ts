@@ -5,11 +5,13 @@ import cors from "cors";
 import prisma from "./configs/prisma.config";
 import { wrappedResponse } from "./utils/functions";
 import demoRoute from "./routes/demo.route";
+import { authFactory, AuthSchemes } from "./auth";
 
 dotenv.config();
 
 const app: Application = express();
 const port: number = parseInt(process.env.PORT || "8000");
+const authProduct = authFactory(AuthSchemes.JWT);
 
 app.use(express.json());
 app.use(
@@ -18,7 +20,8 @@ app.use(
   })
 );
 
-app.use("/hello", demoRoute);
+app.use("/auth", authProduct.router);
+app.use("/hello", authProduct.middleware, demoRoute);
 
 app.use("*", (_: Request, res: Response) => {
   return wrappedResponse(res, "Not Found", 404, null);
@@ -35,12 +38,12 @@ app.use(function onError(
 });
 
 const server = app.listen(port, async () => {
-  //await prisma.$connect();
+  await prisma.$connect();
   console.log(`⚡️[server]: Server is running on PORT ${port}`);
 });
 
 process.on("SIGINT", async () => {
-  //await prisma.$disconnect();
+  await prisma.$disconnect();
   server.close();
   console.log("[server]: Server closed on SIGINT");
 });
