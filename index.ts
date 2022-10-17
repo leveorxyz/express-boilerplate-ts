@@ -11,7 +11,8 @@ dotenv.config();
 
 const app: Application = express();
 const port: number = parseInt(process.env.PORT || "8000");
-const authProduct = authFactory(AuthSchemes.JWT);
+const jwtProduct = authFactory(AuthSchemes.JWT);
+const httpProduct = authFactory(AuthSchemes.HTTP);
 
 app.use(express.json());
 app.use(
@@ -20,8 +21,10 @@ app.use(
   })
 );
 
-app.use("/auth", authProduct.router);
-app.use("/hello", authProduct.middleware, demoRoute);
+app.use("/jwt", jwtProduct.router);
+app.use("/http-token", httpProduct.router);
+
+app.use("/hello", jwtProduct.middleware, demoRoute);
 
 app.use("*", (_: Request, res: Response) => {
   return wrappedResponse(res, "Not Found", 404, null);
