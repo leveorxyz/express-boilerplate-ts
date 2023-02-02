@@ -16,32 +16,32 @@ export const createRefreshToken = async (
   res: Response<GlobalResponse<{ refreshToken: string } | null>>
 ) => {
   const secret = (userConfig.JWT as JwtOptions).secret ?? defaultConfig.secret;
-  const refreshExpire =
-    (userConfig.JWT as JwtOptions).refreshExpire ?? defaultConfig.refreshExpire;
+  const accessExpire =
+    (userConfig.JWT as JwtOptions).accessExpire ?? defaultConfig.accessExpire;
 
-  if (!req.body.accessToken) {
-    return wrappedResponse(res, "No access token in body", 400, null);
+  if (!req.body.refreshToken) {
+    return wrappedResponse(res, "No refresh token in body", 400, null);
   }
-  const accessToken = req.body.accessToken;
+  const refreshToken = req.body.refreshToken;
 
-  const jwtResult = await validateJwt(accessToken, secret);
+  const jwtResult = await validateJwt(refreshToken, secret);
 
   if (!jwtResult.payload) {
     return wrappedResponse(res, jwtResult.message, 400, null);
   }
 
-  if (!jwtResult.payload.type || jwtResult.payload.type !== "access") {
+  if (!jwtResult.payload.type || jwtResult.payload.type !== "refresh") {
     return wrappedResponse(res, "Invalid Token", 400, null);
   }
 
   const token = createJwtToken(
-    { id: jwtResult.payload.id, type: "refresh" },
+    { id: jwtResult.payload.id, type: "access" },
     secret,
     refreshExpire
   );
 
   return wrappedResponse(res, "Token created successfully", 200, {
-    refreshToken: token,
+    accessToken: token,
   });
 };
 
