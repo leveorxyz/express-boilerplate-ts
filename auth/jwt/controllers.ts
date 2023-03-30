@@ -37,7 +37,7 @@ export const createRefreshToken = async (
   const token = createJwtToken(
     { id: jwtResult.payload.id, type: "access" },
     secret,
-    refreshExpire
+    accessExpire
   );
 
   return wrappedResponse(res, "Token created successfully", 200, {
