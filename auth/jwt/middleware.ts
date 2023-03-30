@@ -22,7 +22,7 @@ const authMiddleware = async (
     return wrappedResponse(res, userResult.message, 400, null);
   }
 
-  if (!userResult.payload.type || userResult.payload.type !== "refresh") {
+  if (!userResult.payload.type || userResult.payload.type !== "access") {
     return wrappedResponse(res, "Invalid Token", 400, null);
   }
 
